@@ -1,6 +1,10 @@
 # Personal data — never commit
 config/personal.yml
 *.local.*
+*.local.json
+
+# Claude Code project settings (may include local paths / preferences)
+.claude/
 
 # Original .docx sources contain unredacted PII; .md siblings are the committed truth
 docs/*.docx
