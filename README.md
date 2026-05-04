@@ -16,6 +16,32 @@ setup.
 > `{{...}}` placeholder. Fork it, drop in your own
 > [config/personal.yml](config/personal.example.yml), and adapt.
 
+## Architecture v2 — push-via-Gmail (May 2026)
+
+The original design assumed the Sunday Cowork routine could read Claude
+project chats directly and update a rolling Google Doc. The first
+real-run dry test surfaced both as false: there's no API surface for
+project-chat reads from Cowork, and the Drive connector is read-only
+for content. The architecture pivoted:
+
+- **Capture (during the week):** each subject's project instructions
+  tell Claude to draft a Gmail to the parent at end-of-session, with
+  subject prefix `[SESSION_SUMMARY]` and the structured summary block
+  in the body. Parent reviews the draft (~10 sec) and clicks Send.
+- **Aggregate (Sunday routine):** the routine searches Gmail by
+  subject prefix instead of reading project chats. Same data, different
+  source.
+- **Persist (Sunday routine):** the routine creates one new dated doc
+  per week inside a shared Drive folder, instead of updating a rolling
+  doc. The folder is the chronological archive.
+- **Deliver (Sunday routine):** the routine produces Gmail *drafts* for
+  parent / student / tutor, never auto-sends. Parent ACKs each.
+
+Why this is in the README and not just the design history: it's the
+single biggest change between v1 and v2 of the spec, and anyone forking
+this repo needs to know which architecture they're building. The full
+write-up is [Decision 10 in design-history.md](docs/design-history.md#decision-10-push-via-gmail-not-pull-from-projects-architecture-pivot-may-2026).
+
 ## Why this exists
 
 A short version: I started by building one practice exam paper. Marking
@@ -80,6 +106,10 @@ LICENSE                        MIT — fork freely
 5. [docs/Final_5_Project_Instruction_Updates.md](docs/Final_5_Project_Instruction_Updates.md)
    for the `[SESSION_SUMMARY]` block that goes into each project's
    instructions.
+5b. [docs/project-instructions.md](docs/project-instructions.md) — the
+   three full subject-instruction blocks (Maths / English / Science),
+   ready to paste into each project. Bundles the Socratic stance, RAG
+   grounding, session-summary format, and shared-laptop note.
 6. [docs/Final_1_Routine_Prompt.md](docs/Final_1_Routine_Prompt.md) —
    the prompt to paste into Cowork. Fill placeholders from
    `config/personal.yml`.
@@ -112,6 +142,12 @@ LICENSE                        MIT — fork freely
   exam calendar against the school portal.
 - **Quarterly:** re-read [docs/design-history.md](docs/design-history.md)
   and ask whether any decision should be revisited.
+
+### Connector verification log
+
+| Date | Connectors verified | Notes |
+|------|---------------------|-------|
+| 2026-05-04 | Gmail, Google Docs, Google Calendar | Phase 1 smoke tests passed (list calendars, list recent Drive files, draft Gmail). Re-check on first routine failure or quarterly. |
 
 ## Calibration log
 

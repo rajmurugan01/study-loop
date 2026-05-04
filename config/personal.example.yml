@@ -26,7 +26,19 @@ EMAIL_TUTOR_SCIENCE: "tutor.science@example.com"
 CALENDAR_NAME: "Student Exams"              # e.g. "<Firstname> Exams"
 CALENDAR_ID: ""                             # filled after creation
 DOSSIER_DOC_NAME: "Student — Year 10 Progress Dossier"
-DOSSIER_DOC_URL: ""                         # filled after creation
+DOSSIER_DOC_URL: ""                         # filled after creation — manual landing page (interventions, dad's notes)
+
+# --- Architecture v2 (push-via-Gmail, see Decision 10 in design-history.md) ---
+# Subject prefix used by per-project session-summary drafts. Sunday routine
+# searches Gmail by this prefix to aggregate the week's data — no project-chat
+# read API needed.
+SESSION_SUBJECT_PREFIX: "[SESSION_SUMMARY]"
+
+# Drive folder where the Sunday routine creates one new dated doc per week.
+# (Drive connector is read-only for content, so each week is its own doc.)
+DOSSIER_FOLDER_NAME: "Student Study Dossier"
+DOSSIER_FOLDER_ID: ""                       # filled after creation
+DOSSIER_FOLDER_URL: ""                      # filled after creation
 
 # --- Cowork routine ---
 COWORK_TASK_NAME: "Weekly Study Dossier"

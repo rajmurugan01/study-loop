@@ -3,6 +3,20 @@ config/personal.yml
 *.local.*
 *.local.json
 
+# Local working copies with real names baked in
+# Convention: any *.local.md / *.local.* files and any docs/local/ folder
+# are gitignored. Use this for the "filled-in" version of any redacted
+# template. The committed tree must stay PII-free for the public/LinkedIn
+# audience.
+docs/*.local.*
+docs/local/
+docs/**/*.local.*
+
+# Filled-in / unredacted variants of the public templates. Match by suffix
+# pattern, not by name — the .gitignore itself must not name a real person.
+docs/project-instruction-*.md
+docs/*-docs/
+
 # Claude Code project settings (may include local paths / preferences)
 .claude/
 

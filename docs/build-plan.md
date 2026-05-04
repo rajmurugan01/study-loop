@@ -6,6 +6,19 @@ The 6 design docs in [docs/](.) fully specify the system. [design-history.md](de
 
 This plan converts the spec into an executable rollout with an explicit **Definition of Done (DoD)** for every phase.
 
+> **Architecture v2 pivot (May 2026).** During Phase 4's first dry-run,
+> two assumptions in the original design failed against verified tools:
+> (a) Cowork routines cannot read Claude project chats; (b) the Drive
+> connector is read-only for content. The architecture pivoted to
+> *push-via-Gmail*: each project drafts a `[SESSION_SUMMARY]` email at
+> end-of-session, the Sunday routine searches Gmail by subject prefix
+> instead of reading project chats, and persists each week as a new
+> dated doc inside a shared Drive folder rather than updating one
+> rolling doc. See [Decision 10 in design-history.md](design-history.md#decision-10-push-via-gmail-not-pull-from-projects-architecture-pivot-may-2026).
+> The phases below have been updated for v2; phases 0-3 are mostly
+> unchanged, phase 2 adds a Drive folder, phase 3 adds an email-draft
+> clause to each project's instructions, phase 4 reads Gmail not chats.
+
 ## Final architecture decisions (locked)
 
 These supplement, and in places narrow, the choices in `design-history.md`:
@@ -68,75 +81,78 @@ These supplement, and in places narrow, the choices in `design-history.md`:
 
 ---
 
-## Phase 2 — Calendar + Dossier doc (20 min)
+## Phase 2 — Calendar + Drive folder + landing doc (25 min)
 
-**Goal:** The two external data surfaces the routine reads/writes exist and are correctly shared.
+**Goal:** The three external data surfaces the routine reads/writes exist and are correctly shared.
 
 **Steps:**
 1. Create Google Calendar **`{{CALENDAR_NAME}}`** on Dad's account.
 2. Add at least one real upcoming exam using the exact format from `{{STUDENT_NAME}}_Final_6` (`[Subject] Exam: [Topic]`, four-line description: Scope / Weighting / Duration / Format).
-3. Create Google Doc from `{{STUDENT_NAME}}_Final_2` template; name it the value of `{{DOSSIER_DOC_NAME}}` in `personal.yml`.
-4. Set sharing: **{{STUDENT_NAME}} (his own email) view, tutors view, Dad edit.**
-5. Record dossier doc URL and calendar ID in `config/personal.yml` (NOT in the committed README).
+3. **Create Drive folder** `{{DOSSIER_FOLDER_NAME}}` (e.g. "{{STUDENT_NAME}} Study Dossier"). The Sunday routine creates one new dated doc inside this folder per week. Record its ID + URL in `config/personal.yml`.
+4. Create Google Doc from `{{STUDENT_NAME}}_Final_2` template; name it the value of `{{DOSSIER_DOC_NAME}}`. **In v2 this is a manual landing page only** — home for the interventions log, parent's notes, and (optionally) a copy of the latest week's summary that {{PARENT_ROLE}} pastes in. The routine never writes to it.
+5. Set sharing on both the folder and the landing doc: **{{STUDENT_NAME}} (his own email) view, tutors view, Dad edit.**
+6. Record folder ID, dossier doc URL, and calendar ID in `config/personal.yml` (NOT in the committed README).
 
 **DoD:**
 - [ ] At least one calendar event in the exact title + 4-field description format.
-- [ ] Dossier doc has all template sections; "manual" sections marked clearly so the routine won't overwrite them.
-- [ ] Sharing verified by opening the doc on {{STUDENT_NAME}}'s logged-in account.
+- [ ] Drive folder exists; ID + URL in `personal.yml`.
+- [ ] Landing doc has all template sections; manual sections clearly marked.
+- [ ] Sharing verified by opening folder + doc on {{STUDENT_NAME}}'s logged-in account.
 - [ ] URLs/IDs recorded in `personal.yml` only.
 
 ---
 
-## Phase 3 — Three Claude projects + shared-laptop hygiene (45 min)
+## Phase 3 — Three Claude projects + shared-laptop hygiene + Gmail-draft clause (45 min)
 
-**Goal:** All three subject projects exist with instructions, knowledge, and the new shared-laptop guidance.
+**Goal:** All three subject projects exist with instructions, knowledge, the shared-laptop guidance, and the v2 email-draft clause.
 
 **Steps:**
 1. Create projects on Dad's account: *Year 10 Maths*, *Year 10 English*, *Year 10 Science*.
-2. Paste subject-specific instructions, **including the `[SESSION_SUMMARY]` block from `{{STUDENT_NAME}}_Final_5`** at the end.
+2. Paste subject-specific instructions from [project-instructions.md](project-instructions.md), **which now includes (a) the `[SESSION_SUMMARY]` block from `{{STUDENT_NAME}}_Final_5` and (b) the v2 "Email the summary to Dad" clause** that drafts a Gmail at end-of-session. The Sunday routine reads those drafts (after Dad sends them) — no project-chat read is attempted.
 3. **Append shared-laptop hygiene block** to each project's instructions:
    > This project is {{STUDENT_NAME}}'s study space within a shared Max account on Dad's laptop. Treat the user as {{STUDENT_NAME}} during this chat. If the user asks something that is clearly not study-related (work questions, personal admin, anything that sounds like Dad), gently say "this project is set up for {{STUDENT_NAME}}'s study — for that, open a fresh non-project chat" and stop. Do not surface or refer to non-project chats.
 4. Upload knowledge:
    - **Maths:** textbook chapters in current scope, the 3 existing practice papers + marking, NESA Stage 5 syllabus reference.
    - **English:** current text(s), rubric/marking criteria, past essays + feedback.
    - **Science:** current chapter PDFs, syllabus reference.
-5. Smoke test each project: subject question → Socratic stance fires; non-study question → redirect fires.
+5. Smoke test each project — full 5-test list in [project-instructions.md](project-instructions.md): Socratic, refusal, redirect, SESSION_SUMMARY block, **Gmail draft created**.
 
 **DoD:**
-- [ ] 3 projects exist on Dad's account; instructions pasted; `[SESSION_SUMMARY]` block + shared-laptop block both present in all 3.
+- [ ] 3 projects exist on Dad's account; instructions pasted; `[SESSION_SUMMARY]` block + email-draft clause + shared-laptop block all present in all 3.
 - [ ] Maths project has all 3 papers + marking uploaded.
-- [ ] Each project passes both smoke tests (Socratic on study, redirect on non-study).
-- [ ] Fake end-of-session summary in each project renders the `[SESSION_SUMMARY]` block correctly.
+- [ ] Each project passes all 5 smoke tests.
+- [ ] Fake end-of-session summary in each project renders the `[SESSION_SUMMARY]` block AND drafts the corresponding Gmail (visible in Drafts folder).
 
 ---
 
 ## Phase 4 — Routine build & dry-run (30–60 min, then iterate)
 
-**Goal:** The Cowork routine produces a Sunday email good enough to send to Dad only, and **only reads the 3 named projects**.
+**Goal:** The Cowork routine (v2) aggregates the week's `[SESSION_SUMMARY]` Gmail drafts, reads the calendar, creates a dated snapshot doc, and drafts a Dad-only email good enough to review.
 
 **Steps:**
 1. Create new Cowork task. Schedule: weekly, Sunday 18:00 local.
-2. Paste routine prompt from `{{STUDENT_NAME}}_Final_1`. Fill 7 placeholders from `personal.yml`. Set `CALIBRATION_MODE=true`.
-3. **Add explicit project-scope clause** at the top of the prompt:
-   > Scope of this routine: search ONLY the projects named "Year 10 Maths", "Year 10 English", "Year 10 Science". Do NOT read non-project chats — they may belong to Dad and are out of scope. If a connector returns chats outside these three projects, ignore them.
-4. Recipient list in the prompt: Dad full dossier, {{STUDENT_NAME}} forward-looking plan to **his own email**, tutor brief to each tutor email.
+2. Paste routine prompt from [Final_1_Routine_Prompt.md](Final_1_Routine_Prompt.md). Fill placeholders from `personal.yml`. Set `CALIBRATION_MODE=true`.
+3. **Verify the prompt's data-flow section** says explicitly that the routine reads Gmail (subject prefix `[SESSION_SUMMARY]`), NOT Claude project chats. The v2 prompt has this baked in; do not weaken it.
+4. Recipient list: Dad full dossier, {{STUDENT_NAME}} forward-looking plan to his own email, tutor brief per tutor. **All produced as Gmail drafts** — never auto-send.
 5. Run as one-off. Inspect:
-   - Calendar read? exam countdown correct?
-   - `[SESSION_SUMMARY]` blocks parsed?
-   - Dossier doc updated, "manual" sections untouched (verify with sentinel)?
-   - **Only one email sent (to Dad), since `CALIBRATION_MODE=true`?**
-   - **No non-project chat content leaked into the dossier?**
-6. Iterate prompt; commit changes back to `{{STUDENT_NAME}}_Final_1.md` (redacted).
+   - Gmail searched? `[SESSION_SUMMARY]` emails counted?
+   - Calendar read? exam countdown correct? past-dated exams excluded from countdown?
+   - **New dated doc created in DOSSIER_FOLDER?** Open the folder and verify.
+   - **Landing doc untouched?** (Routine must not write to it.)
+   - **Only Dad's draft created** since `CALIBRATION_MODE=true`?
+   - **Dad's draft created, NOT auto-sent?**
+6. Iterate prompt; commit redacted changes back to `Final_1_Routine_Prompt.md`.
 
 **DoD:**
 - [ ] One-off run completes without errors.
-- [ ] Dossier updated; sentinel intact in manual sections.
-- [ ] Only Dad's email arrives.
-- [ ] Sample the dossier text for any non-project content; none found.
-- [ ] Exam countdown matches calendar.
+- [ ] New snapshot doc created in DOSSIER_FOLDER with correct title format.
+- [ ] Landing doc unchanged (compare contents before/after).
+- [ ] Only Dad's draft exists in Gmail (no {{STUDENT_NAME}} / tutor drafts; no auto-sent).
+- [ ] If any SESSION_SUMMARY emails existed, they were parsed and reflected in the dossier; if none, the dossier honestly says "no activity."
+- [ ] Exam countdown matches calendar; past exams excluded.
 - [ ] Prompt revisions committed (redacted).
 
-**Stop condition:** Do not advance to Phase 5 until the one-off output is honest and project-scoped.
+**Stop condition:** Do not advance to Phase 5 until the one-off output is honest and the data-flow boundaries (Gmail-only inputs, draft-only outputs, landing-doc untouched) all hold.
 
 ---
 

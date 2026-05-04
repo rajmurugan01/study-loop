@@ -207,9 +207,58 @@ These weren't just exam preparation — they generated the actual data the syste
 
 If you're starting a new subject (say Geography in Term 2), don't skip the equivalent step. Generate at least 1-2 practice papers and have him do them before the dossier system has anything to track.
 
+### Decision 10: Push-via-Gmail, not pull-from-projects (architecture pivot, May 2026)
+
+**What was chosen**
+
+Per-session data flows from Claude projects to Gmail, where the Sunday routine reads it. NOT routine-pulls-from-project-chats.
+
+Concretely:
+1. **Capture:** at the end of every marking / feedback / serious practice session, each subject's project instructions tell Claude to **draft a Gmail to Dad** with subject `[SESSION_SUMMARY] <Subject> <YYYY-MM-DD>` and the structured `[SESSION_SUMMARY]` block as body. Dad reviews and clicks Send (≈10 seconds).
+2. **Aggregate:** the Sunday Cowork routine searches Gmail for that subject prefix `newer_than:7d`, parses the blocks, joins with calendar data.
+3. **Persist:** the routine creates **a new dated Google Doc per week** (`<Student> — Week of YYYY-MM-DD`) inside a shared Drive folder. The folder itself is the chronological archive. The original "rolling dossier" doc becomes a static landing page for manual content (interventions log, parent's notes), never overwritten by the routine.
+4. **Deliver:** the Sunday routine produces **Gmail drafts** (not direct sends). Dad clicks Send for each. Drafts pile up visibly if a week is forgotten.
+
+**Why this changed**
+
+The original Decision 7 architecture assumed Cowork routines could (a) read Claude project chats and (b) write to existing Google Docs. The first run of the routine surfaced both as false:
+- Cowork tasks have no API surface for reading Claude project conversations on the same account.
+- The Google Drive connector exposes content reads (`read_file_content`, `search_files`) and file creation (`create_file`) but no `update_file_content`.
+
+This is the third time this design has hit the same root cause — assuming a recent Anthropic capability without verifying it ([decisions 7](#decision-7-scheduled-cowork-routine-not-claude-code-script-or-manual) and [the second mistake catalogued in "Things we got wrong"](#i-anchored-on-the-wrong-tracking-architecture-twice)). At that point, the right move is to redesign around verified primitives, not to wait for a feature.
+
+**Why push-via-Gmail wins**
+
+- **Verified primitives only.** Gmail draft creation, Gmail search, Drive folder + new-file creation, Calendar read — all confirmed working in this account/connector setup.
+- **Auditable.** Every datapoint the routine sees passed through Dad's Sent folder. There are no rogue summaries fabricated from chat history.
+- **Failure mode is benign.** If {{STUDENT_NAME}} doesn't use the projects, no `[SESSION_SUMMARY]` drafts get created → the routine reports zero activity, correctly. If Dad forgets to click Send, drafts pile up in Gmail visibly — recoverable.
+- **Decouples from Anthropic platform changes.** Whether or not Cowork ever exposes project-chat search, this design works.
+- **Same intent, fewer load-bearing assumptions.** The Socratic stance, RAG grounding, three-recipient differentiation, calibration window, and scope discipline all survive unchanged.
+
+**Honest costs**
+
+- Dad becomes a human ACK on every session-summary email (~10 sec per session). Originally the system promised zero per-session friction; now it promises ~10 seconds.
+- The dossier is no longer a single rolling doc. Each week is its own doc inside a folder. Nice side-effect: the archive is naturally sortable and immune to accidental overwrite.
+- Two soft dependencies in the data path ({{STUDENT_NAME}} using projects + Dad sending drafts). The first was always true; the second is new but visible.
+
+**When to revisit**
+
+- If Anthropic exposes a project-chat read API to Cowork routines, the Capture step could revert to pull. But by then this design will be the boring stable thing and switching back would be churn for marginal gain.
+- If the Drive connector gains an `update_file_content` tool, the per-week-doc model can collapse back to a rolling dossier. Same reasoning — don't switch unless the pain is real.
+
 ## Things we got wrong, or partly wrong
 
 Honesty section. These are places where the design conversation drifted, was wrong, or required correction.
+
+### I anchored on project-chat introspection that doesn't exist (the third miss)
+
+The original architecture (Decisions 7 and earlier) treated "Cowork routine reads three Claude projects on the same account" as a primitive. It isn't. There's no exposed surface for that today, and the first real run of the routine made it obvious — the routine simply could not see {{STUDENT_NAME}}'s chats.
+
+Worse: the same root cause as the first two misses. I assumed a recent platform feature existed, didn't verify it, and only found out when the system tried to run for real. The lesson from Decision 7 ("verify Anthropic feature availability before committing to architecture") was *literally written down* and I still missed this case.
+
+The fix was to flip the data flow — Decision 10. Projects push session summaries via Gmail draft instead of being pulled from. This sidesteps the missing primitive entirely and uses only verified tools (Gmail search/draft, Drive folder + new-file creation, Calendar read).
+
+Lesson: when "verify the primitive" is a written rule, treat the *whole input layer* as suspect, not just the obvious bits. I verified Cowork scheduling existed (yes) but not Cowork's read access to project chats (no). Both are needed for the original design to work; checking only one was the mistake.
 
 ### I anchored on the wrong tracking architecture twice
 
