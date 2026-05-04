@@ -1,0 +1,12 @@
+# Personal data — never commit
+config/personal.yml
+*.local.*
+
+# Original .docx sources contain unredacted PII; .md siblings are the committed truth
+docs/*.docx
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp

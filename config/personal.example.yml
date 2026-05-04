@@ -1,0 +1,34 @@
+# Personal config — placeholder schema (committed)
+#
+# Copy this file to `personal.yml` (gitignored) and fill in real values.
+# The keys here drive the {{...}} placeholders used throughout docs/.
+# `personal.yml` is the source of truth for setup; the committed tree
+# never contains real names, emails, school, dates, or tutor identities.
+
+# --- People ---
+STUDENT_NAME: "Firstname"                  # e.g. given name only
+STUDENT_FULL_NAME: "Firstname Lastname"
+PARENT_ROLE: "Dad"                          # role label, used in emails
+SCHOOL_NAME: "Some High School"
+
+TUTOR_MATHS_NAME: "Tutor Name"
+TUTOR_ENGLISH_NAME: "Tutor Name"
+TUTOR_SCIENCE_NAME: "Tutor Name"
+
+# --- Emails ---
+EMAIL_PARENT: "parent@example.com"
+EMAIL_STUDENT: "student@example.com"
+EMAIL_TUTOR_MATHS: "tutor.maths@example.com"
+EMAIL_TUTOR_ENGLISH: "tutor.english@example.com"
+EMAIL_TUTOR_SCIENCE: "tutor.science@example.com"
+
+# --- Google resources (created in Phase 2) ---
+CALENDAR_NAME: "Student Exams"              # e.g. "<Firstname> Exams"
+CALENDAR_ID: ""                             # filled after creation
+DOSSIER_DOC_NAME: "Student — Year 10 Progress Dossier"
+DOSSIER_DOC_URL: ""                         # filled after creation
+
+# --- Cowork routine ---
+COWORK_TASK_NAME: "Weekly Study Dossier"
+ROUTINE_SCHEDULE: "Sunday 18:00 local"
+CALIBRATION_MODE: true                       # flip to false at go-live
