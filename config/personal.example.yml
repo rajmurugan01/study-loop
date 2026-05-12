@@ -14,6 +14,7 @@ SCHOOL_NAME: "Some High School"
 TUTOR_MATHS_NAME: "Tutor Name"
 TUTOR_ENGLISH_NAME: "Tutor Name"
 TUTOR_SCIENCE_NAME: "Tutor Name"
+TUTOR_COMMERCE_NAME: ""     # leave blank if subject is self-taught
 
 # --- Emails ---
 EMAIL_PARENT: "parent@example.com"
@@ -21,6 +22,7 @@ EMAIL_STUDENT: "student@example.com"
 EMAIL_TUTOR_MATHS: "tutor.maths@example.com"
 EMAIL_TUTOR_ENGLISH: "tutor.english@example.com"
 EMAIL_TUTOR_SCIENCE: "tutor.science@example.com"
+EMAIL_TUTOR_COMMERCE: ""    # leave blank if Commerce is self-taught
 
 # --- Google resources (created in Phase 2) ---
 CALENDAR_NAME: "Student Exams"              # e.g. "<Firstname> Exams"

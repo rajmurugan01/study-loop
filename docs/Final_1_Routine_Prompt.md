@@ -25,6 +25,8 @@ live in `config/personal.yml`):
 - `[YOUR_EMAIL]` → `EMAIL_PARENT`
 - `[STUDENT_EMAIL]` → `EMAIL_STUDENT`
 - `[MATHS_TUTOR_EMAIL]`, `[ENGLISH_TUTOR_EMAIL]`, `[SCIENCE_TUTOR_EMAIL]`
+  (Commerce is self-taught — no tutor email; the routine skips cleanly
+  when the field is blank.)
 - `CALIBRATION_MODE` — true for the calibration window, false at go-live
 
 ## THE PROMPT — copy below this line into Cowork
@@ -39,8 +41,8 @@ You are running the weekly progress dossier for {{STUDENT_FULL_NAME}}, Year 10 s
 
 Data flow this routine relies on:
 
-1. During the week, three Claude projects (Year 10 Maths, English,
-   Science) draft Gmail messages to {{PARENT_ROLE}} each time
+1. During the week, four Claude projects (Year 10 Maths, English,
+   Science, Commerce) draft Gmail messages to {{PARENT_ROLE}} each time
    {{STUDENT_NAME}} completes a marking or practice session. Subject
    line prefix: `[SESSION_SUMMARY]`.
 2. {{PARENT_ROLE}} reviews and clicks Send. The emails land in
@@ -101,7 +103,8 @@ specified" and continue.
 
 ## Step 3: Generate dossier sections per subject
 
-For each of the three subjects, produce:
+For each of the four subjects (Maths, English, Science, Commerce),
+produce:
 
 ### Rolling summary (3-5 sentences)
 Where {{STUDENT_NAME}} is THIS week. State of play. What changed since
