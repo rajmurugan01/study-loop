@@ -42,6 +42,60 @@ single biggest change between v1 and v2 of the spec, and anyone forking
 this repo needs to know which architecture they're building. The full
 write-up is [Decision 10 in design-history.md](docs/design-history.md#decision-10-push-via-gmail-not-pull-from-projects-architecture-pivot-may-2026).
 
+## How it works (end-to-end)
+
+```mermaid
+flowchart TD
+    subgraph capture["During the week: Capture"]
+        direction TB
+        R1[Student opens a subject project chat<br/>Maths, English, Science, Commerce]
+        R2[Claude tutors Socratically<br/>and produces a SESSION_SUMMARY block]
+        R3[Gmail draft created<br/>subject: SESSION_SUMMARY Subject YYYY-MM-DD]
+        R4[Parent reviews, clicks Send]
+        R1 --> R2 --> R3 --> R4
+    end
+
+    R4 --> GMAIL[("Gmail<br/>parent's inbox")]
+    CAL[("Google Calendar<br/>exam dates")]
+
+    subgraph aggregate["Sunday 18:00: Cowork cloud routine"]
+        direction TB
+        A1["Search Gmail<br/>subject:SESSION_SUMMARY newer_than:7d"]
+        A2[Read upcoming exams<br/>next 90 days]
+        A3[Aggregate per subject:<br/>rolling summary, weak spots, wins,<br/>papers log, plan for next week]
+        A4[(New dated Google Doc<br/>in shared Drive folder)]
+        A5[Draft 1 to 5 weekly emails]
+        A1 --> A3
+        A2 --> A3
+        A3 --> A4
+        A3 --> A5
+    end
+
+    GMAIL --> A1
+    CAL --> A2
+
+    subgraph deliver["Sunday evening: Deliver"]
+        direction TB
+        D1[Parent reads the weekly dossier draft]
+        D2[Parent sends drafts:<br/>self, student, tutors<br/>per calibration mode]
+        D1 --> D2
+    end
+
+    A5 --> D1
+    D2 --> RECIPIENTS(["Parent, Student, Tutors"])
+```
+
+Two things worth noting in the diagram:
+
+- **Two human ACK loops.** The parent clicks Send twice in the flow:
+  once per session-summary email during the week, once for the weekly
+  dossier on Sunday. This is the design choice from Decision 10. No
+  autonomous send.
+- **The architecture has no read access to project chats.** The Capture
+  block (top) produces emails that the Sunday routine (middle) consumes.
+  Project chats themselves are private to the student and never seen
+  by the routine. This was a deliberate response to the v1 → v2 pivot.
+
 ## Why this exists
 
 A short version: I started by building one practice exam paper. Marking
