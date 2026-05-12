@@ -96,16 +96,73 @@ Two things worth noting in the diagram:
   Project chats themselves are private to the student and never seen
   by the routine. This was a deliberate response to the v1 → v2 pivot.
 
-## Why this exists
+## Why, how, and what follows
 
-A short version: I started by building one practice exam paper. Marking
-it surfaced patterns. A second harder paper confirmed them. A third
-targeted the patterns. By then it was clear we needed something durable
-that didn't depend on me sitting next to him every Sunday — and that the
-tutor and my son both needed visibility, but in different forms.
+### Why
 
-The full story, including all the design choices and the things I got
-wrong, is in [docs/design-history.md](docs/design-history.md).
+I have a Year 10 son. He works hard, has good tutors, and a clear
+academic ceiling above where he currently sits. Between school, three
+subjects of tutoring, and self-study, there are a lot of moving parts
+and a lot of feedback that never reaches the same place. I am a working
+parent. I cannot be the integration layer.
+
+This started concrete. I built one practice exam paper, marked his
+attempt, and saw patterns within thirty minutes. A second harder paper
+confirmed them. A third targeted them. By then the question was no
+longer "can I see what he needs to work on" but "can that pattern
+recognition be sustained without me sitting beside him every Sunday."
+The thesis behind this repo: yes, with three conditions.
+
+1. **AI as the integration layer, not the teacher.** The Socratic
+   stance is non-negotiable. The system refuses to write essays,
+   refuses to solve homework problems for submission, and hints rather
+   than answers. If it became the path of least resistance it would
+   replace struggle with comfort, which is the opposite of learning.
+
+2. **The parent stays in the loop.** Every datapoint that ends up in
+   the weekly dossier passed through a parent's hand. The architecture
+   has two human-ACK points by design (one during the week per session
+   summary, one on Sunday for the weekly dossier). The system is
+   leverage, not autonomy.
+
+3. **Honest by default.** When there is no data, the dossier says so.
+   When the routine is uncertain, it flags uncertainty. The
+   [things we got wrong](docs/design-history.md) section of the design
+   history is part of the value, not a bug.
+
+### How
+
+See the [diagram](#how-it-works-end-to-end) and the
+[Architecture v2](#architecture-v2--push-via-gmail-may-2026) section
+above. The short version: four Claude projects (one per subject) draft
+per-session summary emails. A Sunday Cowork cloud routine reads those
+emails plus the exam calendar, creates a dated snapshot doc, and drafts
+differentiated emails for parent, student, and tutors. The parent
+reviews and sends. The whole thing is open-source, redacted, forkable.
+
+### What follows
+
+**For other parents thinking about this:** start with a real practice
+paper, not an architecture diagram. The system shape matters less than
+the discipline behind it; the dossier is downstream of the child
+actually doing work. Get the Socratic stance right and the rest is
+plumbing. Get it wrong and you have built a homework-completion engine.
+
+**For AI builders watching:** the lessons generalise beyond a family
+study system. Verify your primitives before designing around them. When
+introspection isn't possible, flip from pull to push. Treat
+human-in-the-loop as a feature, not a defect. Calibration windows beat
+go-live confidence. And the
+[design history](docs/design-history.md) is more useful than the spec,
+because it shows which assumptions failed and why.
+
+**For me, going forward:** three Sunday calibration runs on real data
+before flipping the system to multi-recipient. A quarter of real use
+before deciding whether it earns its place in the family's week. If my
+son disengages from the projects, no tooling change fixes that. The
+honest response is a conversation, not a prompt edit. If it does work
+for him, the design generalises, which is the open-source bet behind
+making this repo public.
 
 ## What you need
 
