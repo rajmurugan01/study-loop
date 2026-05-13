@@ -16,7 +16,7 @@ setup.
 > `{{...}}` placeholder. Fork it, drop in your own
 > [config/personal.yml](config/personal.example.yml), and adapt.
 
-## Working architecture — push-via-Gmail (May 2026)
+## Architecture — push-via-Gmail (May 2026)
 
 The original architecture for the weekly feedback loop assumed the
 Sunday Cowork routine could read Claude project chats directly and
@@ -38,12 +38,12 @@ pivoted:
 - **Deliver (Sunday routine):** the routine produces Gmail *drafts* for
   parent / student / tutor, never auto-sends. Parent ACKs each.
 
-Why this is in the README and not just the design history: anyone
-forking this repo needs to see at a glance which architecture they
-are building (push, not pull). The pivot only happened inside the
-third iteration of the system; the broader iteration story is in the
-[Why](#why-how-and-what-follows) section below. The full write-up
-of the architecture pivot itself is
+Why this is in the README and not just the design history: it's the
+single biggest architectural decision in the working system, and anyone
+forking this repo needs to know which architecture they're building.
+The pivot happened inside the third iteration of the system; the broader
+iteration story is in the next section. The full write-up of the
+architecture pivot itself is
 [Decision 10 in design-history.md](docs/design-history.md#decision-10-push-via-gmail-not-pull-from-projects-architecture-pivot-may-2026).
 
 ## How it works (end-to-end)
@@ -103,6 +103,36 @@ Two things worth noting in the diagram:
   [Why](#why-how-and-what-follows) section for the broader
   three-iteration story this pivot sits inside.
 
+## How this system got here: three iterations
+
+The system you see in this repo is the third iteration of the idea.
+
+**v1 was an AI answer machine.** Frictionless access to AI for a 15-year-old:
+ask a question, get an answer, move on. It failed pedagogically before any
+architecture question came up. A teenager with unmediated AI answers learns
+to skip the struggle, which is where actual learning happens. Killed it.
+
+**v2 was a Socratic tutor in a single Claude project.** Strict instructions:
+never give the answer, ask what they tried, hint once, walk through one step
+only if needed. Refuse outright on essay-writing and homework problems for
+submission. This worked at the chat level — my son started using it. But
+the tutoring was invisible to me as a parent and invisible to his tutors.
+v2 was a working tutor with no feedback loop.
+
+**v3 is what's in this repo.** Three subject-specific projects (so project
+knowledge doesn't bleed across subjects), the Socratic stance preserved, and
+a weekly feedback loop that surfaces what happened to parent, student, and
+tutors in three differentiated emails. The architecture you see is itself
+the second design of that feedback loop. The first design tried to pull
+data out of project chats and failed at the first real run. Decision 10
+in [docs/design-history.md](docs/design-history.md) documents that pivot
+in detail.
+
+Read the design history before forking. The non-negotiable choices
+(Socratic stance, RAG over project knowledge, push-via-Gmail architecture)
+are non-negotiable for reasons. Weakening them without understanding why
+they exist tends to produce v1 again.
+
 ## Why, how, and what follows
 
 ### Why
@@ -113,24 +143,8 @@ subjects of tutoring, and self-study, there are a lot of moving parts
 and a lot of feedback that never reaches the same place. I am a working
 parent. I cannot be the integration layer.
 
-The system you see in this repo is the third iteration of the idea.
-The first was an AI answer machine, which failed pedagogically: a 15
-year old with frictionless access to answers stops doing the work that
-makes learning happen. The second was a Socratic tutor per subject,
-which worked at the chat level but produced no visibility for parents
-or tutors. The third is this: Socratic tutoring with a weekly feedback
-loop that surfaces what happened to me, to him, and to his tutors. The
-architecture you see in this repo is itself the second design of that
-third iteration. The first design tried to pull data out of project
-chats and failed on the first real run. Decision 10 in
-[docs/design-history.md](docs/design-history.md) documents that pivot.
-
-This started concrete. I built one practice exam paper, marked his
-attempt, and saw patterns within thirty minutes. A second harder paper
-confirmed them. A third targeted them. By then the question was no
-longer "can I see what he needs to work on" but "can that pattern
-recognition be sustained without me sitting beside him every Sunday."
-The thesis behind this repo: yes, with three conditions.
+The thesis behind v3 (this repo): AI can do the integration work that
+a parent doesn't have time for, with three conditions.
 
 1. **AI as the integration layer, not the teacher.** The Socratic
    stance is non-negotiable. The system refuses to write essays,
@@ -152,7 +166,7 @@ The thesis behind this repo: yes, with three conditions.
 ### How
 
 See the [diagram](#how-it-works-end-to-end) and the
-[Working architecture](#working-architecture--push-via-gmail-may-2026) section
+[Architecture](#architecture--push-via-gmail-may-2026) section
 above. The short version: four Claude projects (one per subject) draft
 per-session summary emails. A Sunday Cowork cloud routine reads those
 emails plus the exam calendar, creates a dated snapshot doc, and drafts
@@ -166,6 +180,11 @@ paper, not an architecture diagram. The system shape matters less than
 the discipline behind it; the dossier is downstream of the child
 actually doing work. Get the Socratic stance right and the rest is
 plumbing. Get it wrong and you have built a homework-completion engine.
+
+The first thing to get wrong is also the first thing I got wrong: building
+an AI answer machine. If your child can ask for and receive a finished
+answer, you have v1, not a learning system. Start with the Socratic stance,
+not with tooling.
 
 **For AI builders watching:** the lessons generalise beyond a family
 study system. Verify your primitives before designing around them. When
