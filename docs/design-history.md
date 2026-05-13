@@ -312,6 +312,58 @@ Predictions about what changes you'll likely make in the next 12 months. Use as 
 - The Socratic stance may need to relax — senior students legitimately need more direct help, not less.
 - The system will probably need rebuilding for the senior curriculum, not just extending. Year 11/12 has different texture (depth, ATAR-stakes, university-prep).
 
+## Early signal (Term 2, 2026)
+
+One data point worth recording, with appropriate caveats.
+
+{{STUDENT_NAME}}'s Term 2 Maths assessment improved from A to A+. He
+finished the paper with seven minutes to spare and reported feeling
+confident going in. This was after roughly one term of partial use of
+the system — the per-subject project with Socratic tutoring was active
+throughout, the v3 Sunday routine had been calibrating for the latter
+weeks of the term.
+
+**What this is not:**
+
+- Evidence the system works. One assessment in one subject after one
+  partial term is a single data point. Replication across subjects and
+  terms is required before the system can be said to have done anything.
+- Attributable cleanly to this system. Confounds include: natural
+  maturation, better tutor-student fit in Term 2, easier or different
+  topic coverage, regression to the mean from a strong Term 1
+  performance, and the Hawthorne effect from his awareness that the
+  system was watching.
+- A replicable claim. English and Science have not produced equivalent
+  signal yet. The Maths result may not generalise.
+
+**What this might be:**
+
+- The first signal the Socratic stance worked. The confidence
+  self-report is the most telling element. It suggests he went in
+  feeling like he understood the material, not like he had memorised
+  someone else's answers. That is the design intent of the Socratic
+  stance from Decision 2.
+- Validation of the calibration window (Decision 6). The system did
+  not interrupt his Term 1 routine with half-formed recommendations.
+  By the time it was generating recommendations he could act on, the
+  patterns were grounded in real data.
+
+**What to watch in Term 3 and beyond:**
+
+- Does the result replicate in Maths, or was Term 2 a one-off?
+- Does English or Science show similar improvement, or is the system's
+  utility subject-specific?
+- Does his confidence going into assessments hold up across multiple
+  exams, or was Term 2 emotionally favourable for unrelated reasons?
+- If the system is dropped (e.g., for a term as a natural experiment),
+  do results regress? This is the cleanest test but also the highest
+  cost to run.
+
+Recording this here so the claim is on the record with the caveats
+intact, rather than as a headline somewhere later. If the system is
+ever cited publicly as effective, the citation should come back to
+this entry and the subsequent terms' data, not to Term 2 in isolation.
+
 ## If something breaks, read this
 
 Six months from now, something will have broken. Likely candidates and what to do:
