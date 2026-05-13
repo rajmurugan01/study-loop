@@ -16,13 +16,14 @@ setup.
 > `{{...}}` placeholder. Fork it, drop in your own
 > [config/personal.yml](config/personal.example.yml), and adapt.
 
-## Architecture v2 — push-via-Gmail (May 2026)
+## Working architecture — push-via-Gmail (May 2026)
 
-The original design assumed the Sunday Cowork routine could read Claude
-project chats directly and update a rolling Google Doc. The first
-real-run dry test surfaced both as false: there's no API surface for
-project-chat reads from Cowork, and the Drive connector is read-only
-for content. The architecture pivoted:
+The original architecture for the weekly feedback loop assumed the
+Sunday Cowork routine could read Claude project chats directly and
+update a rolling Google Doc. The first real-run dry test surfaced both
+as false: there's no API surface for project-chat reads from Cowork,
+and the Drive connector is read-only for content. The architecture
+pivoted:
 
 - **Capture (during the week):** each subject's project instructions
   tell Claude to draft a Gmail to the parent at end-of-session, with
@@ -37,10 +38,13 @@ for content. The architecture pivoted:
 - **Deliver (Sunday routine):** the routine produces Gmail *drafts* for
   parent / student / tutor, never auto-sends. Parent ACKs each.
 
-Why this is in the README and not just the design history: it's the
-single biggest change between v1 and v2 of the spec, and anyone forking
-this repo needs to know which architecture they're building. The full
-write-up is [Decision 10 in design-history.md](docs/design-history.md#decision-10-push-via-gmail-not-pull-from-projects-architecture-pivot-may-2026).
+Why this is in the README and not just the design history: anyone
+forking this repo needs to see at a glance which architecture they
+are building (push, not pull). The pivot only happened inside the
+third iteration of the system; the broader iteration story is in the
+[Why](#why-how-and-what-follows) section below. The full write-up
+of the architecture pivot itself is
+[Decision 10 in design-history.md](docs/design-history.md#decision-10-push-via-gmail-not-pull-from-projects-architecture-pivot-may-2026).
 
 ## How it works (end-to-end)
 
@@ -94,7 +98,10 @@ Two things worth noting in the diagram:
 - **The architecture has no read access to project chats.** The Capture
   block (top) produces emails that the Sunday routine (middle) consumes.
   Project chats themselves are private to the student and never seen
-  by the routine. This was a deliberate response to the v1 → v2 pivot.
+  by the routine. This was a deliberate response to the architecture
+  pivot inside this iteration of the system. See the
+  [Why](#why-how-and-what-follows) section for the broader
+  three-iteration story this pivot sits inside.
 
 ## Why, how, and what follows
 
@@ -105,6 +112,18 @@ academic ceiling above where he currently sits. Between school, three
 subjects of tutoring, and self-study, there are a lot of moving parts
 and a lot of feedback that never reaches the same place. I am a working
 parent. I cannot be the integration layer.
+
+The system you see in this repo is the third iteration of the idea.
+The first was an AI answer machine, which failed pedagogically: a 15
+year old with frictionless access to answers stops doing the work that
+makes learning happen. The second was a Socratic tutor per subject,
+which worked at the chat level but produced no visibility for parents
+or tutors. The third is this: Socratic tutoring with a weekly feedback
+loop that surfaces what happened to me, to him, and to his tutors. The
+architecture you see in this repo is itself the second design of that
+third iteration. The first design tried to pull data out of project
+chats and failed on the first real run. Decision 10 in
+[docs/design-history.md](docs/design-history.md) documents that pivot.
 
 This started concrete. I built one practice exam paper, marked his
 attempt, and saw patterns within thirty minutes. A second harder paper
@@ -133,7 +152,7 @@ The thesis behind this repo: yes, with three conditions.
 ### How
 
 See the [diagram](#how-it-works-end-to-end) and the
-[Architecture v2](#architecture-v2--push-via-gmail-may-2026) section
+[Working architecture](#working-architecture--push-via-gmail-may-2026) section
 above. The short version: four Claude projects (one per subject) draft
 per-session summary emails. A Sunday Cowork cloud routine reads those
 emails plus the exam calendar, creates a dated snapshot doc, and drafts
